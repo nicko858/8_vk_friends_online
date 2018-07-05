@@ -9,7 +9,7 @@ def get_user_login():
     return login
 
 
-def vk_log_disable(mode):
+def disable_vk_log(mode):
     logger = logging.getLogger("vk")
     logger.disabled = mode
 
@@ -20,18 +20,19 @@ def get_user_password():
     return password
 
 
-def get_online_friends(login, password, app_id):
-    api_version = 5.80
-    session = vk.AuthSession(   
+def get_online_friends(login,
+                       password,
+                       app_id,
+                       api_version=5.80):
+    session = vk.AuthSession(
         app_id=app_id,
         user_login=login,
         user_password=password,
         scope="friends"
     )
-    api = vk.API(session)
-    friends_online_id = api.friends.getOnline(v=api_version)
-    friends_online = api.users.get(user_ids=friends_online_id,
-                                   v=api_version)
+    api = vk.API(session, v=api_version)
+    friends_online_id = api.friends.getOnline()
+    friends_online = api.users.get(user_ids=friends_online_id)
     return friends_online
 
 
@@ -48,7 +49,7 @@ def output_friends_to_console(friends_online):
 
 
 if __name__ == "__main__":
-    vk_log_disable(True)
+    disable_vk_log(True)
     app_id = 6623784
     login = get_user_login()
     password = get_user_password()

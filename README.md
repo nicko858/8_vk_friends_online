@@ -9,7 +9,7 @@ Module ```vk_friends_online.py``` contains the following functions:
 - ```get_user_login()```
 - ```get_user_password()```
 - ```output_friends_to_console()```
-- ```vk_log()```
+- ```disable_vk_log()```
 
 
 The program uses these standart and third-party libraries:
@@ -17,6 +17,7 @@ The program uses these standart and third-party libraries:
 ```python
 vk
 getpass
+logging
 ```
 
 How in works:
