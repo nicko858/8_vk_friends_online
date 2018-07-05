@@ -1,32 +1,59 @@
 import vk
-
-
-APP_ID = -1  # чтобы получить app_id, нужно зарегистрировать своё приложение на https://vk.com/dev
+import getpass
+from vk.exceptions import VkAuthError
+import logging
 
 
 def get_user_login():
-    pass
+    login = input("Enter your vk login: ")
+    return login
+
+
+def vk_log_disable(mode):
+    logger = logging.getLogger("vk")
+    logger.disabled = mode
 
 
 def get_user_password():
-    pass
+    password = getpass.getpass(
+        prompt="Enter your vk password: ")
+    return password
 
 
-def get_online_friends(login, password):
-    session = vk.AuthSession(
-        app_id=APP_ID,
+def get_online_friends(login, password, app_id):
+    api_version = 5.80
+    session = vk.AuthSession(   
+        app_id=app_id,
         user_login=login,
         user_password=password,
+        scope="friends"
     )
     api = vk.API(session)
-    # например, api.friends.get()
+    friends_online_id = api.friends.getOnline(v=api_version)
+    friends_online = api.users.get(user_ids=friends_online_id,
+                                   v=api_version)
+    return friends_online
 
 
 def output_friends_to_console(friends_online):
-    pass
+    if not friends_online:
+        print("There are no friends online!")
+    else:
+        delimiter = "*" * 23
+        print(delimiter)
+        print("* Your friends online *")
+        print(delimiter)
+        for friend in friends_online:
+            print("{first_name} {last_name}".format(**friend))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
+    vk_log_disable(True)
+    app_id = 6623784
     login = get_user_login()
     password = get_user_password()
-    friends_online = get_online_friends(login, password)
-    output_friends_to_console(friends_online)
+    try:
+        friends_online = get_online_friends(login, password, app_id)
+        output_friends_to_console(friends_online)
+    except VkAuthError:
+        exit("Incorrect login or password!")
